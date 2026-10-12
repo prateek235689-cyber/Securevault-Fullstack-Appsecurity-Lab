@@ -1,9 +1,11 @@
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const authenticate = require("../middleware/auth");
+const authorize = require("../middleware/authorize");
 
 const router = express.Router();
 
@@ -182,5 +184,20 @@ router.get("/me", authenticate, (req, res) => {
 // ==========================================
 // EXPORT AUTHENTICATION ROUTER
 // ==========================================
+router.get (
+    "/admin",
+    authenticate,
+    authorize("admin"),
+    (req,res) => {
+        return res.status(200).json({
+            message: "Admin access granted",
+            user: {
+                id: req.user.id,
+                email: req.user.email,
+                role: req.user.role
+            }
+        });
+    }
 
+);
 module.exports = router;
